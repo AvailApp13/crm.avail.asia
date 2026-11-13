@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- Веб-админка Avail (crm.avail.asia). Свой index.html, а не web/index.html:
+       без карт Google, аналитики, OG-тегов, manifest и service worker.
+       Сборка и выкладка — .github/workflows/admin-web.yml, описание —
+       docs/admin_web.md.
+
+       Правила загрузки (CSP) — первой строкой после кодировки, чтобы они
+       действовали на всё ниже. Разрешено только своё (этот адрес) и
+       Supabase проекта (lib/core/supabase/supabase_config.dart):
+       • script-src 'wasm-unsafe-eval' — без него браузер не запустит
+         CanvasKit (WebAssembly); eval и вставленные в страницу скрипты
+         запрещены (Dart собирается с --csp);
+       • style-src 'unsafe-inline' — Flutter сам ставит стили элементам;
+       • connect-src blob:/data:, media-src blob: — просмотр выбранного
+         с компьютера файла (видео заставки) до загрузки;
+       • frame-ancestors в мета-теге браузер не понимает — от встраивания
+         в чужие страницы защищает guard.js.
+       Новый внешний адрес (картинки, API) нужно добавить сюда, иначе
+       браузер его молча заблокирует. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://paikboidnrgthyxpwdrk.supabase.co; font-src 'self' data:; connect-src 'self' data: blob: https://paikboidnrgthyxpwdrk.supabase.co wss://paikboidnrgthyxpwdrk.supabase.co; media-src 'self' blob: https://paikboidnrgthyxpwdrk.supabase.co; worker-src 'self' blob:; manifest-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+  <!-- Админка живёт в корне crm.avail.asia. -->
+  <base href="/">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avail · Админка</title>
+  <meta name="theme-color" content="#1c1b1f">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #1c1b1f; }
+    /* Экран загрузки до первого кадра приложения (как в web/index.html). */
+    #avail-loader {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+      background: radial-gradient(1200px 600px at 50% 40%, #2a1f2e 0%, #1c1b1f 60%);
+      color: rgba(255,255,255,.72); font: 500 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      transition: opacity .5s ease, visibility .5s ease; z-index: 10;
+    }
+    #avail-loader.done { opacity: 0; visibility: hidden; }
+    #avail-loader img {
+      width: 96px; height: 96px;
+      animation: avail-breathe 2.4s ease-in-out infinite;
+      filter: drop-shadow(0 10px 30px rgba(236, 59, 119, .35));
+    }
+    #avail-loader .bar {
+      width: 180px; height: 4px; border-radius: 4px; overflow: hidden;
+      background: rgba(255,255,255,.08);
+    }
+    #avail-loader .bar::after {
+      content: ""; display: block; width: 40%; height: 100%; border-radius: 4px;
+      background: linear-gradient(90deg, #EC3B77, #3AA5F0);
+      animation: avail-run 1.4s cubic-bezier(.6,.1,.3,.9) infinite;
+    }
+    @keyframes avail-breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+    }
+    @keyframes avail-run {
+      0% { transform: translateX(-110%); }
+      100% { transform: translateX(260%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #avail-loader img, #avail-loader .bar::after { animation: none; }
+    }
+  </style>
+
+  <!-- Сначала защита: только https и не внутри чужой страницы. Отдельным
+       файлом, потому что встроенные скрипты CSP запрещает. -->
+  <script src="guard.js?v=76f8fc894c"></script>
+</head>
+<body>
+  <div id="avail-loader" aria-label="Avail · Админка">
+    <img src="icons/logo-256.png" alt="Avail">
+    <div>Админка</div>
+    <div class="bar"></div>
+  </div>
+  <noscript>Включите JavaScript в браузере, чтобы открыть админку.</noscript>
+  <script src="flutter_bootstrap.js?v=c127658f78" async></script>
+</body>
+</html>
